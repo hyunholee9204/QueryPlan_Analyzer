@@ -69,4 +69,20 @@ CREATE INDEX idx_orders_order_id ON orders(order_id);
 
 ```
 
-## 
+## 실행 시간 측정 로직
+
+단순 수치상의 비용(Cost)을 넘어, 나노초(ns) 단위의 실측 시스템 시간을 측정하여 사용자 체감 성능을 수치화했습니다.  
+**EXPLAIN ANALYZE**를 통해 실제 DB 작업 시간과 쿼리 계획 수립 시간(Planning Time)을 분리하여 분석합니다.  
+
+```java
+
+long startTime = System.nanoTime();
+
+String explainSql = "EXPLAIN (ANALYZE, FORMAT JSON) " + userQuery;
+List<Map<String, Object>> result = jdbcTemplate.queryForList(explainSql);
+
+long endTime = System.nanoTime();
+double durationMs = (endTime - startTime) / 1_000_000.0;
+
+```
+
