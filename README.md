@@ -25,4 +25,23 @@ PostgreSQL의 `EXPLAIN ANALYZE`를 활용하여 520만 건 대용량 데이터 �
 | **비용(Cost)** | 95,404 | **8.45** |
 
 ---
-*본 프로젝트는 DBA 지망생으로서 SQL 튜닝 역량을 증명하기 위해 제작되었습니다.*
+
+## 분석 엔진
+
+PostgreSQL의 실행 계획 JSON 데이터를 파싱하여 Node Type에 따른 성능 병목을 자동 감지합니다.  
+Seq Scan과 Index Scan 등 핵심 지표를 식별하여 사용자에게 즉각적인 최적화 가이드를 제공하는 프로젝트의 핵심 브레인입니다.  
+
+```java
+if (rawJson.contains("\"Node Type\": \"Seq Scan\"")) {
+    feedback.append("⚠️ **[경고] Sequential Scan(전체 스캔) 발생!**\n");
+    feedback.append("- 인덱스 없이 500만 건 이상의 데이터를 전부 읽고 있습니다.\n");
+    feedback.append("- **조치:** WHERE 절 컬럼에 인덱스를 추가하여 성능을 개선하세요.\n");
+}
+
+if (rawJson.contains("\"Node Type\": \"Index Scan\"")) {
+    feedback.append("✅ **[우수] 인덱스 스캔 사용 중**\n");
+    feedback.append("- 인덱스를 통해 필요한 데이터만 골라내어 속도가 매우 빠릅니다.\n");
+}
+
+```
+
